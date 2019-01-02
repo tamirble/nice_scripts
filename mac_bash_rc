@@ -1,0 +1,22 @@
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+get_emoji() {
+  if [ "${exit_code}" -eq "0" ]; then
+    printf 😌
+  else
+    printf 😅
+  fi
+}
+
+PROMPT_COMMAND=__prompt_command
+__prompt_command() {
+  local exit_code=${?}
+  emoji=$(get_emoji exit_code)
+  PS1="[\w]\[\033[32m\]\$(parse_git_branch)\[\033[00m\]\n\$(get_conda_env)${emoji} $ "
+}
+alias ls="ls -G"
+alias ll="ls -la"
+
+eval "$(chef shell-init bash)"
